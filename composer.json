@@ -1,0 +1,32 @@
+{
+    "name": "allenjb/queues",
+    "description": "Library for handling queues via either PDO MySQL or RabbitMQ (Bunny)",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "AllenJB",
+            "email": "github@allenjb.me.uk"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "AllenJB\\Queues\\": "src"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "require": {
+        "php": "^7.2",
+        "ext-pdo": "*",
+        "bunny/bunny": "^0.4.1",
+        "guzzlehttp/guzzle": "^6.3",
+        "ramsey/uuid": "^3.8",
+        "react/promise": "^2.7"
+    },
+    "require-dev": {
+        "ext-sqlite": "*",
+        "phpunit/phpunit": "^8.4"
+    }
+}
