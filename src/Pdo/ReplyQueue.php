@@ -32,6 +32,7 @@ class ReplyQueue implements ReplyQueueInterface
 
         if (($name ?? "") === "") {
             $name = "_rpc_replies";
+            $this->name = $name;
             $this->setCorrelationId(Uuid::uuid4()->getHex());
             $this->declareQueue();
         }
