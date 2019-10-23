@@ -30,7 +30,7 @@ class ReplyQueue implements ReplyQueueInterface
         $this->pdo = $pdo;
         $this->dbTz = $dbTz;
 
-        if ($name === null) {
+        if (($name ?? "") === "") {
             $name = "_rpc_replies";
             $this->setCorrelationId(Uuid::uuid4()->getHex());
             $this->declareQueue();
