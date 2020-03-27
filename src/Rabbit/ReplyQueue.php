@@ -33,7 +33,11 @@ class ReplyQueue implements ReplyQueueInterface
         $this->channel = $bunnyChannel;
         $this->name = $name;
         if (($this->name ?? "") === "") {
-            $this->setCorrelationId(Uuid::uuid4()->getHex());
+            $correlationId = Uuid::uuid4()->getHex();
+            if (! is_string($correlationId)) {
+                $correlationId = $correlationId->toString();
+            }
+            $this->setCorrelationId($correlationId);
 
             $this->declareQueue();
         }

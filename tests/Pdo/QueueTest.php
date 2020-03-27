@@ -176,7 +176,7 @@ class QueueTest extends TestCase
         );
         $this->assertNull($queueItem);
 
-        sleep(3);
+        sleep(4);
 
         $sizeChangeTotal = $queue->getTotalMessageCount() - $origSizeTotal;
         $sizeChange = $queue->getMessageCount() - $origSize;

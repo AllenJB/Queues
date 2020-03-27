@@ -33,7 +33,11 @@ class ReplyQueue implements ReplyQueueInterface
         if (($name ?? "") === "") {
             $name = "_rpc_replies";
             $this->name = $name;
-            $this->setCorrelationId(Uuid::uuid4()->getHex());
+            $correlationId = Uuid::uuid4()->getHex();
+            if (! is_string($correlationId)) {
+                $correlationId = $correlationId->toString();
+            }
+            $this->setCorrelationId($correlationId);
             $this->declareQueue();
         }
         // MySQL max is 64 chars, and we reserve 2 for the "q_" prefix
