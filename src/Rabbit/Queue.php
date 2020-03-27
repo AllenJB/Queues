@@ -112,7 +112,7 @@ class Queue implements QueueInterface
         ];
         $httpClient = new Client();
         $response = $httpClient->get($uri, $options);
-        $data = json_decode($response->getBody()->getContents(), false, JSON_THROW_ON_ERROR);
+        $data = json_decode($response->getBody()->getContents(), false, 512, JSON_THROW_ON_ERROR);
 
         return ($data->messages_ready ?? null);
     }
