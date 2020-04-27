@@ -15,16 +15,20 @@ class RPCQueue implements RPCQueueInterface
 
     protected $publishQueue;
 
+    protected $correlationId;
+
 
     public function __construct(string $name, Channel $bunnyChannel, int $apiPort)
     {
         $this->replyQueue = new ReplyQueue(null, $bunnyChannel);
+        $this->correlationId = $this->replyQueue->getCorrelationId();
         $this->publishQueue = new Queue($name, $bunnyChannel, $apiPort);
     }
 
 
     public function publish(QueueMessage $message): PromiseInterface
     {
+        $message = $message->withCorrelationId($this->correlationId);
         $message = $message->withReplyTo($this->replyQueue->getName());
         return $this->publishQueue->publish($message);
     }
