@@ -111,7 +111,11 @@ class Queue implements QueueInterface
                 $callback($this, $message);
             }
 
-            // Always process all the waiting responses
+            if (microtime(true) > $tsLimit) {
+                break;
+            }
+
+            // If more queue items are pending, loop immediately
             if ($waitingReplies < 1) {
                 $waitingReplies = $this->getMessageCount();
             }
@@ -119,9 +123,6 @@ class Queue implements QueueInterface
                 continue;
             }
 
-            if (microtime(true) > $tsLimit) {
-                break;
-            }
             usleep(10);
         }
     }
@@ -158,7 +159,7 @@ class Queue implements QueueInterface
      */
     public function getMessageCount(): ?int
     {
-        $sql = "SELECT COUNT(queueid) AS `c` 
+        $sql = "SELECT COUNT(queueid) AS `c`
             FROM `q_{$this->name}`
             WHERE `locked` = 0
                 AND (`dt_scheduled` IS NULL OR `dt_scheduled` < NOW())";
@@ -172,7 +173,7 @@ class Queue implements QueueInterface
      */
     public function getTotalMessageCount(): ?int
     {
-        $sql = "SELECT COUNT(queueid) AS `c` 
+        $sql = "SELECT COUNT(queueid) AS `c`
             FROM `q_{$this->name}`
             WHERE `locked` = 0";
         $stmt = $this->pdo->query($sql);

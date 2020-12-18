@@ -155,7 +155,11 @@ class ReplyQueue implements ReplyQueueInterface
                 }
             }
 
-            // Always process all the waiting responses
+            if (microtime(true) > $tsLimit) {
+                break;
+            }
+
+            // If more queue items are pending, loop immediately
             if ($waitingReplies < 1) {
                 $waitingReplies = $this->getMessageCount();
             }
@@ -163,9 +167,6 @@ class ReplyQueue implements ReplyQueueInterface
                 continue;
             }
 
-            if (microtime(true) > $tsLimit) {
-                break;
-            }
             usleep(10);
         }
     }
