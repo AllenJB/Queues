@@ -109,6 +109,8 @@ class Queue implements QueueInterface
                     ->withCorrelationId($row["correlation_id"]);
 
                 $callback($this, $message);
+            } else {
+                $waitingReplies = 0;
             }
 
             if (microtime(true) > $tsLimit) {

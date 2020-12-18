@@ -153,6 +153,8 @@ class ReplyQueue implements ReplyQueueInterface
                 if (($this->expectedResponseCount !== null) && ($this->responses >= $this->expectedResponseCount)) {
                     break;
                 }
+            } else {
+                $waitingReplies = 0;
             }
 
             if (microtime(true) > $tsLimit) {
