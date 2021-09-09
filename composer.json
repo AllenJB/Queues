@@ -20,7 +20,7 @@
     "require": {
         "php": "^7.2",
         "ext-pdo": "*",
-        "bunny/bunny": "^0.4.1",
+        "bunny/bunny": "^0.4.1|^0.5",
         "guzzlehttp/guzzle": "^6.3",
         "ramsey/uuid": "^3.8|^4.0",
         "react/promise": "^2.7"
