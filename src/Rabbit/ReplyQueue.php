@@ -80,7 +80,7 @@ class ReplyQueue implements ReplyQueueInterface
     }
 
 
-    public function consume(callable $callback, float $timeoutSecs): void
+    public function consume(callable $callback, float $timeoutSecs, ?float $pollIntervalSecs = null): void
     {
         $this->channel->consume(
             function (BunnyMessage $message, Channel $channel, Client $client) use ($callback) {
