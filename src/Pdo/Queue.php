@@ -75,7 +75,7 @@ class Queue implements QueueInterface
     }
 
 
-    public function consume(callable $callback, float $timeoutSecs, float $pollIntervalSecs = 0.5): void
+    public function consume(callable $callback, float $timeoutSecs, ?float $pollIntervalSecs = 0.5): void
     {
         $tsLimit = microtime(true) + $timeoutSecs;
         $waitingReplies = 0;

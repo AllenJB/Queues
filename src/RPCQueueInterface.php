@@ -14,7 +14,7 @@ interface RPCQueueInterface
     /**
      * @param callable $callback Callback with parameters: RPCQueueInterface $this, QueueMessage
      */
-    public function consume(callable $callback, float $timeoutSecs, float $pollIntervalSecs): void;
+    public function consume(callable $callback, float $timeoutSecs, ?float $pollIntervalSecs): void;
 
 
     public function setExpectedResponseCount(?int $count): void;
