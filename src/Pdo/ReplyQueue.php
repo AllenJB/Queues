@@ -110,7 +110,7 @@ class ReplyQueue implements ReplyQueueInterface
     }
 
 
-    public function consume(callable $callback, float $timeoutSecs): void
+    public function consume(callable $callback, float $timeoutSecs, float $pollIntervalSecs = 0.1): void
     {
         $tsLimit = microtime(true) + $timeoutSecs;
         $waitingReplies = 0;
@@ -169,7 +169,7 @@ class ReplyQueue implements ReplyQueueInterface
                 continue;
             }
 
-            usleep(10);
+            usleep($pollIntervalSecs * 1000000);
         }
     }
 

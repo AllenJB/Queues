@@ -33,7 +33,7 @@ class RPCQueue implements RPCQueueInterface
     }
 
 
-    public function consume(callable $callback, float $timeoutSecs): void
+    public function consume(callable $callback, float $timeoutSecs, float $pollIntervalSecs = 0.1): void
     {
         $this->replyQueue->consume($callback, $timeoutSecs);
     }

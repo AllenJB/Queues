@@ -80,7 +80,7 @@ class Queue implements QueueInterface
     }
 
 
-    public function consume(callable $callback, float $timeoutSecs): void
+    public function consume(callable $callback, float $timeoutSecs, float $pollIntervalSecs = 0.1): void
     {
         throw new UnsupportedOperationException("Consumption is not supported by RabbitQueue");
     }
