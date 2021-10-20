@@ -125,7 +125,7 @@ class Queue implements QueueInterface
                 continue;
             }
 
-            usleep($pollIntervalSecs * 1000000);
+            usleep((int) ($pollIntervalSecs * 1000000));
         }
     }
 

@@ -169,7 +169,7 @@ class ReplyQueue implements ReplyQueueInterface
                 continue;
             }
 
-            usleep($pollIntervalSecs * 1000000);
+            usleep((int) ($pollIntervalSecs * 1000000));
         }
     }
 
