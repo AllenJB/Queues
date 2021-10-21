@@ -1,0 +1,18 @@
+<ruleset name="compatibility">
+    <description>Project Coding Standard - Compatiblity Checks</description>
+    <ini name="memory_limit" value="2G" />
+
+    <!-- commandline parameter equivalents -->
+    <!-- use the "colors" commandline parameter for colored output - not here as colors don't work well with Jenkins log -->
+    <arg name="report-checkstyle" value="php-compat.checkstyle.xml" />
+    <arg value="q"/>
+    <arg name="extensions" value="php" />
+
+    <!-- severity is 0 - 10, where 10 is highest and 0 is "hidden" (special) -->
+    <!-- By default CodeSniffer hides anything below 5, and default level for sniffs is 5 -->
+    <arg name="severity" value="1" />
+
+    <rule ref="PHPCompatibility">
+        <config name="testVersion" value="7.3-"/>
+    </rule>
+</ruleset>
