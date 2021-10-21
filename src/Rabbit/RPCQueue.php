@@ -11,10 +11,19 @@ use React\Promise\PromiseInterface;
 class RPCQueue implements RPCQueueInterface
 {
 
+    /**
+     * @var ReplyQueue
+     */
     protected $replyQueue;
 
+    /**
+     * @var Queue
+     */
     protected $publishQueue;
 
+    /**
+     * @var string|null
+     */
     protected $correlationId;
 
 

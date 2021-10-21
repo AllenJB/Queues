@@ -12,16 +12,34 @@ use React\Promise\PromiseInterface;
 class ReplyQueue implements ReplyQueueInterface
 {
 
+    /**
+     * @var string
+     */
     protected $name;
 
+    /**
+     * @var null|string
+     */
     protected $correlationId = null;
 
+    /**
+     * @var \PDO
+     */
     protected $pdo;
 
+    /**
+     * @var \DateTimeZone
+     */
     protected $dbTz;
 
+    /**
+     * @var null|int
+     */
     protected $expectedResponseCount = null;
 
+    /**
+     * @var int
+     */
     protected $responses = 0;
 
 
@@ -30,21 +48,24 @@ class ReplyQueue implements ReplyQueueInterface
         $this->pdo = $pdo;
         $this->dbTz = $dbTz;
 
-        if (($name ?? "") === "") {
+        if (($name === null) || ($name === "")) {
             $name = "_rpc_replies";
             $this->name = $name;
+            /**
+             * @var \Ramsey\Uuid\Type\Hexadecimal|string $correlationId ramsey/uuid 3.8 returns string
+             */
             $correlationId = Uuid::uuid4()->getHex();
             if (! is_string($correlationId)) {
                 $correlationId = $correlationId->toString();
             }
             $this->setCorrelationId($correlationId);
             $this->declareQueue();
-        }
-        // MySQL max is 64 chars, and we reserve 2 for the "q_" prefix
-        if (strlen($name) > 62) {
+        } elseif (strlen($name ?? "") > 62) {
+            // MySQL max is 64 chars, and we reserve 2 for the "q_" prefix
             throw new \InvalidArgumentException("Queue name max length is 62 characters");
+        } else {
+            $this->name = $name;
         }
-        $this->name = $name;
     }
 
 

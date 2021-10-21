@@ -11,6 +11,9 @@ use React\Promise\PromiseInterface;
 class Queue implements QueueInterface
 {
 
+    /**
+     * @var string Queue name
+     */
     protected $name;
 
     /**
@@ -18,6 +21,9 @@ class Queue implements QueueInterface
      */
     protected $pdo;
 
+    /**
+     * @var \DateTimeZone
+     */
     protected $dbTz;
 
 
@@ -87,6 +93,12 @@ class Queue implements QueueInterface
               AND LAST_INSERT_ID(`queueid`)
               LIMIT 1;";
             $stmt = $this->pdo->query($sql);
+            if ($stmt === false) {
+                $errorInfo = $this->pdo->errorInfo();
+                throw new \UnexpectedValueException(
+                    "Queue item lock query failed: " . $errorInfo[0] . ": " . $errorInfo[2]
+                );
+            }
             $affected = $stmt->rowCount();
 
             if ($affected > 0) {
@@ -166,6 +178,10 @@ class Queue implements QueueInterface
             WHERE `locked` = 0
                 AND (`dt_scheduled` IS NULL OR `dt_scheduled` < NOW())";
         $stmt = $this->pdo->query($sql);
+        if ($stmt === false) {
+            $errorInfo = $this->pdo->errorInfo();
+            throw new \UnexpectedValueException("Query failed: " . $errorInfo[0] . ": " . $errorInfo[2]);
+        }
         return (int) $stmt->fetch(\PDO::FETCH_OBJ)->c;
     }
 
@@ -179,6 +195,10 @@ class Queue implements QueueInterface
             FROM `q_{$this->name}`
             WHERE `locked` = 0";
         $stmt = $this->pdo->query($sql);
+        if ($stmt === false) {
+            $errorInfo = $this->pdo->errorInfo();
+            throw new \UnexpectedValueException("Query failed: " . $errorInfo[0] . ": " . $errorInfo[2]);
+        }
         return (int) $stmt->fetch(\PDO::FETCH_OBJ)->c;
     }
 

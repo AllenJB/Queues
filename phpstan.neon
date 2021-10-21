@@ -1,0 +1,49 @@
+# roave/no-floaters is disabled by default because it catches too many things at the moment
+# We may want to look at narrowing the scope of the no-floaters rules to (exclude) specific classes
+#includes:
+#    - vendor/roave/no-floaters/rules.neon
+parameters:
+    # From 0-8 (or "max". 0 is loosest). See the files in conf/ in the repo for what's at each level
+    # Can be overridden with the -l parameter on the commandline
+    level: 8
+    parallel:
+        processTimeout: 300.0
+    fileExtensions:
+        - php
+    paths:
+        - src
+
+    # From phpstan-strict-rules
+    polluteScopeWithLoopInitialAssignments: false
+    polluteScopeWithAlwaysIterableForeach: false
+    checkFunctionNameCase: true
+    reportStaticMethodSignatures: true
+
+    ignoreErrors:
+        - '#^Call to an undefined method React\\Promise\\PromiseInterface::done\(\)#'
+
+services:
+    -
+        class: PHPStan\Rules\DisallowedConstructs\DisallowedImplicitArrayCreationRule
+        tags:
+            - phpstan.rules.rule
+    -
+        class: PHPStan\Rules\ForeachLoop\OverwriteVariablesWithForeachRule
+        tags:
+            - phpstan.rules.rule
+    -
+        class: PHPStan\Rules\Methods\WrongCaseOfInheritedMethodRule
+        tags:
+            - phpstan.rules.rule
+    -
+        class: PHPStan\Rules\StrictCalls\DynamicCallOnStaticMethodsRule
+        tags:
+            - phpstan.rules.rule
+    -
+        class: SlamPhpStan\UnusedVariableRule
+        tags:
+            - phpstan.rules.rule
+    -
+        class: SlamPhpStan\StringToClassRule
+        tags:
+            - phpstan.rules.rule

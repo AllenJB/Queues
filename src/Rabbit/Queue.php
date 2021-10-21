@@ -14,18 +14,36 @@ use React\Promise\PromiseInterface;
 class Queue implements QueueInterface
 {
 
+    /**
+     * @var int
+     */
     protected $apiPort;
 
+    /**
+     * @var string
+     */
     protected $name;
 
+    /**
+     * @var Channel
+     */
     protected $channel;
 
+    /**
+     * @var array<string,int|string>
+     */
     protected $messageHeaders = [
         "deliver-mode" => 2,
     ];
 
+    /**
+     * @var null|string
+     */
     protected $correlationId = null;
 
+    /**
+     * @var array<string>
+     */
     protected static $declaredQueues = [];
 
 
@@ -106,7 +124,7 @@ class Queue implements QueueInterface
         $bunnyProxy = new BunnyClientProxy($this->channel->getClient());
 
         $uri = "http://" . $bunnyProxy->getHost() . ":" . $this->apiPort . "/api/queues/"
-            . urlencode($bunnyProxy->getVHost()) . "/" . urlencode($this->name);
+            . urlencode($bunnyProxy->getVHost() ?? "") . "/" . urlencode($this->name);
         $options = [
             "auth" => [$bunnyProxy->getUsername(), $bunnyProxy->getPassword()],
         ];

@@ -6,19 +6,40 @@ namespace AllenJB\Queues;
 class QueueMessage
 {
 
+    /**
+     * @var null|int
+     */
     protected $messageId = null;
 
+    /**
+     * @var int
+     */
     protected $attempts = 0;
 
+    /**
+     * @var mixed
+     */
     protected $data;
 
+    /**
+     * @var null|string
+     */
     protected $replyTo = null;
 
+    /**
+     * @var null|string
+     */
     protected $correlationId = null;
 
+    /**
+     * @var null|mixed
+     */
     protected $original = null;
 
 
+    /**
+     * @param mixed $data
+     */
     public function __construct($data)
     {
         $this->data = $data;
@@ -53,6 +74,9 @@ class QueueMessage
     }
 
 
+    /**
+     * @return mixed
+     */
     public function getData()
     {
         return $this->data;
@@ -87,6 +111,10 @@ class QueueMessage
     }
 
 
+    /**
+     * Attach the original message this one was generated from (not persisted)
+     * @param mixed $originalMsg
+     */
     public function withOriginal($originalMsg): QueueMessage
     {
         $msg = clone $this;
@@ -95,6 +123,10 @@ class QueueMessage
     }
 
 
+    /**
+     * Retrieve the original message this one was generated from
+     * @return mixed|null
+     */
     public function getOriginal()
     {
         return $this->original;
