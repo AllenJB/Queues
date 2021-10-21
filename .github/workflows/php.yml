@@ -1,9 +1,11 @@
 name: PHP
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
   pull_request:
-    branches: [ master ]
+    branches:
+      - '*'
 jobs:
   lint:
     runs-on: ubuntu-latest

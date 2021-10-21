@@ -3,12 +3,6 @@
     "description": "Library for handling queues via either PDO MySQL or RabbitMQ (Bunny)",
     "type": "library",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "AllenJB",
-            "email": "github@allenjb.me.uk"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "AllenJB\\Queues\\": "src"
