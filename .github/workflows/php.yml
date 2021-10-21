@@ -66,6 +66,6 @@ jobs:
       - name: Run static analysis with phpstan
         run: vendor/bin/phpstan analyze --configuration=phpstan.neon
       - name: PHP Compatibility
-        run: vendor/bin/phpcs --standard=php-compatibility.xml
+        run: vendor/bin/phpcs --standard=php-compatibility.xml ./src
       - name: PHP Compatbility Report
         run: cs2pr ./php-compat.checkstyle.xml
