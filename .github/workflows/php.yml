@@ -2,8 +2,7 @@ name: PHP
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  pull_request
 jobs:
   lint:
     runs-on: ubuntu-latest
