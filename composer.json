@@ -32,6 +32,6 @@
         "phpstan/phpstan": "^0.12.99",
         "phpstan/phpstan-strict-rules": "^0.12.11",
         "phpunit/phpunit": "^8.4|^9.0|^9.5",
-        "slam/phpstan-extensions": "^5.1"
+        "slam/phpstan-extensions": "^5.0.2"
     }
 }
