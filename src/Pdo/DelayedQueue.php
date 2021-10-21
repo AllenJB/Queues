@@ -10,9 +10,18 @@ use React\Promise\PromiseInterface;
 class DelayedQueue extends Queue
 {
 
+    /**
+     * @var int Queue delivery delay in seconds
+     */
     protected $delayS;
 
 
+    /**
+     * @param string $name
+     * @param \PDO $pdo
+     * @param \DateTimeZone $dbTz
+     * @param int $delayS Queue delivery delay in seconds
+     */
     public function __construct(string $name, \PDO $pdo, \DateTimeZone $dbTz, int $delayS)
     {
         $this->delayS = $delayS;

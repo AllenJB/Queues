@@ -12,8 +12,14 @@ use Bunny\Channel;
 class QueueFactory implements QueueFactoryInterface
 {
 
+    /**
+     * @var int
+     */
     protected $apiPort;
 
+    /**
+     * @var Channel
+     */
     protected $bunnyChannel;
 
 

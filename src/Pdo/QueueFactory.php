@@ -11,8 +11,14 @@ use AllenJB\Queues\RPCQueueInterface;
 class QueueFactory implements QueueFactoryInterface
 {
 
+    /**
+     * @var \PDO
+     */
     protected $pdo;
 
+    /**
+     * @var \DateTimeZone
+     */
     protected $dbTz;
 
     public function __construct(\PDO $pdo, \DateTimeZone $dbTz)

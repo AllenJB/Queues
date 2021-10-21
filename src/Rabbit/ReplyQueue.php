@@ -14,26 +14,47 @@ use React\Promise\PromiseInterface;
 class ReplyQueue implements ReplyQueueInterface
 {
 
+    /**
+     * @var string
+     */
     protected $name;
 
+    /**
+     * @var Channel
+     */
     protected $channel;
 
+    /**
+     * @var array<string,int|string>
+     */
     protected $messageHeaders = [
     ];
 
+    /**
+     * @var null|string
+     */
     protected $correlationId = null;
 
+    /**
+     * @var null|int
+     */
     protected $expectedResponseCount = null;
 
+    /**
+     * @var int
+     */
     protected $responseCount = 0;
 
 
     public function __construct(?string $name, Channel $bunnyChannel)
     {
         $this->channel = $bunnyChannel;
-        $this->name = $name;
+        $this->name = ($name ?? "");
         if (($this->name ?? "") === "") {
             $correlationId = Uuid::uuid4()->getHex();
+            /**
+             * @var \Ramsey\Uuid\Type\Hexadecimal|string $correlationId ramsey/uuid 3.8 returns string
+             */
             if (! is_string($correlationId)) {
                 $correlationId = $correlationId->toString();
             }
@@ -53,6 +74,10 @@ class ReplyQueue implements ReplyQueueInterface
                     $this->name = $okFrame->queue;
                 }
             )->done();
+        } else if ($retVal === false) {
+            throw new \UnexpectedValueException("Queue declare failed");
+        } else if ($retVal === true) {
+            throw new \UnexpectedValueException("Queue declare returned unexpected value (bool true)");
         } else {
             $this->name = $retVal->queue;
         }
@@ -76,7 +101,11 @@ class ReplyQueue implements ReplyQueueInterface
         }
         $data = serialize($message->getData());
 
-        return $this->channel->publish($data, $messageHeaders, "", $this->name);
+        $retval = $this->channel->publish($data, $messageHeaders, "", $this->name);
+        if (! ($retval instanceof PromiseInterface)) {
+            throw new \UnexpectedValueException("Publish returned unexpected value: ". var_export($retval, true));
+        }
+        return $retval;
     }
 
 

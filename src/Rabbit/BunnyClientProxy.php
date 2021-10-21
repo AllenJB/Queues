@@ -12,6 +12,9 @@ use AllenJB\Queues\UnsupportedOperationException;
 class BunnyClientProxy extends AbstractClient
 {
 
+    /**
+     * @var AbstractClient
+     */
     protected $client;
 
 
@@ -34,6 +37,9 @@ class BunnyClientProxy extends AbstractClient
     }
 
 
+    /**
+     * @phpstan-ignore-next-line
+     */
     protected function feedReadBuffer()
     {
         throw new UnsupportedOperationException("Unimplemented");

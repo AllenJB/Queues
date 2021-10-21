@@ -12,8 +12,14 @@ use React\Promise\PromiseInterface;
 class DelayedQueue extends Queue
 {
 
+    /**
+     * @var string
+     */
     protected $destName;
 
+    /**
+     * @var float|int
+     */
     protected $delayMS;
 
 
@@ -34,11 +40,17 @@ class DelayedQueue extends Queue
         ];
 
         if ($this->channel->getClient() instanceof AsyncClient) {
-            $this->channel->exchangeDeclare("ex_" . $this->destName, "fanout", false, true)->done();
-            $this->channel->queueDeclare($this->destName, false, true, false)->done();
-            $this->channel->queueBind($this->destName, "ex_" . $this->destName)->done();
-
-            $this->channel->queueDeclare($this->name, false, true, false, false, false, $waitQueueArgs)->done();
+            $promise = $this->channel->exchangeDeclare("ex_" . $this->destName, "fanout", false, true);
+            if (! ($promise instanceof PromiseInterface)) {
+                throw new \UnexpectedValueException("Exchange declare did not return a promise");
+            }
+            $promise->then(function () {
+                return $this->channel->queueDeclare($this->destName, false, true, false);
+            })->then(function () {
+                return $this->channel->queueBind($this->destName, "ex_" . $this->destName);
+            })->then(function () use ($waitQueueArgs) {
+                return $this->channel->queueDeclare($this->name, false, true, false, false, false, $waitQueueArgs);
+            })->done();
         } else {
             $this->channel->exchangeDeclare("ex_" . $this->destName, "fanout", false, true);
             $this->channel->queueDeclare($this->destName, false, true, false);
