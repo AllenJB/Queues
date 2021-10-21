@@ -14,7 +14,7 @@ class QueueMessage
     /**
      * @var int
      */
-    protected $attempts = 0;
+    protected int $attempts = 0;
 
     /**
      * @var mixed
