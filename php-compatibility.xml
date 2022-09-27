@@ -3,7 +3,7 @@
     <ini name="memory_limit" value="2G" />
     <config name="ignore_errors_on_exit" value="1" />
     <config name="ignore_warnings_on_exit" value="1" />
-    <config name="testVersion" value="7.3-"/>
+    <config name="testVersion" value="7.4-"/>
 
     <!-- commandline parameter equivalents -->
     <!-- use the "colors" commandline parameter for colored output - not here as colors don't work well with Jenkins log -->
