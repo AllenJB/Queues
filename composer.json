@@ -9,10 +9,13 @@
         }
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     },
     "require": {
-        "php": "^7.3|^8.0",
+        "php": "^7.4|^8.0",
         "ext-pdo": "*",
         "bunny/bunny": "^0.4.1|^0.5",
         "guzzlehttp/guzzle": "^6.3|^7.0",

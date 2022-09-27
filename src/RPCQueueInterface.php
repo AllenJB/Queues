@@ -22,4 +22,8 @@ interface RPCQueueInterface
 
     public function incrementExpectedResponseCount(int $by = 1): void;
 
+    public function setReplyQueue(ReplyQueueInterface $replyQueue): void;
+
+    public function getReplyQueue(): ReplyQueueInterface;
+
 }

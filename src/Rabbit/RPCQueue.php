@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace AllenJB\Queues\Rabbit;
 
 use AllenJB\Queues\QueueMessage;
+use AllenJB\Queues\ReplyQueueInterface;
 use AllenJB\Queues\RPCQueueInterface;
 use Bunny\Channel;
 use React\Promise\PromiseInterface;
@@ -11,53 +12,60 @@ use React\Promise\PromiseInterface;
 class RPCQueue implements RPCQueueInterface
 {
 
-    /**
-     * @var ReplyQueue
-     */
-    protected $replyQueue;
+    protected ReplyQueueInterface $replyQueue;
 
-    /**
-     * @var Queue
-     */
-    protected $publishQueue;
+    protected Queue $publishQueue;
 
-    /**
-     * @var string|null
-     */
-    protected $correlationId;
+    protected Channel $bunnyChannel;
 
 
     public function __construct(string $name, Channel $bunnyChannel, int $apiPort)
     {
-        $this->replyQueue = new ReplyQueue(null, $bunnyChannel);
-        $this->correlationId = $this->replyQueue->getCorrelationId();
+        $this->bunnyChannel = $bunnyChannel;
         $this->publishQueue = new Queue($name, $bunnyChannel, $apiPort);
     }
 
 
     public function publish(QueueMessage $message): PromiseInterface
     {
-        $message = $message->withCorrelationId($this->correlationId);
-        $message = $message->withReplyTo($this->replyQueue->getName());
+        $replyQueue = $this->getReplyQueue();
+        $message = $message->withCorrelationId($replyQueue->getCorrelationId());
+        $message = $message->withReplyTo($replyQueue->getName());
         return $this->publishQueue->publish($message);
     }
 
 
     public function consume(callable $callback, float $timeoutSecs, ?float $pollIntervalSecs = null): void
     {
-        $this->replyQueue->consume($callback, $timeoutSecs);
+        $this->getReplyQueue()->consume($callback, $timeoutSecs);
     }
 
 
     public function setExpectedResponseCount(?int $count): void
     {
-        $this->replyQueue->setExpectedResponseCount($count);
+        $this->getReplyQueue()->setExpectedResponseCount($count);
     }
 
 
     public function incrementExpectedResponseCount(int $by = 1): void
     {
-        $this->replyQueue->incrementExpectedResponseCount($by);
+        $this->getReplyQueue()->incrementExpectedResponseCount($by);
+    }
+
+    public function setReplyQueue(ReplyQueueInterface $replyQueue): void
+    {
+        if (isset($this->replyQueue)) {
+            trigger_error("Reply queue already initialized! Overriding it now may cause unexpected behavior", E_USER_WARNING);
+        }
+        $this->replyQueue = $replyQueue;
+    }
+
+    public function getReplyQueue(): ReplyQueueInterface
+    {
+        if (! isset($this->replyQueue)) {
+            $this->replyQueue = new ReplyQueue(null, $this->bunnyChannel);
+        }
+        return $this->replyQueue;
     }
 
 
