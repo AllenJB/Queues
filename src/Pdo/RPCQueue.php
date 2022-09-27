@@ -4,58 +4,68 @@ declare(strict_types=1);
 namespace AllenJB\Queues\Pdo;
 
 use AllenJB\Queues\QueueMessage;
+use AllenJB\Queues\ReplyQueueInterface;
 use AllenJB\Queues\RPCQueueInterface;
 use React\Promise\PromiseInterface;
 
 class RPCQueue implements RPCQueueInterface
 {
 
-    /**
-     * @var string|null
-     */
-    protected $correlationId;
+    protected ReplyQueueInterface $replyQueue;
 
-    /**
-     * @var ReplyQueue
-     */
-    protected $replyQueue;
+    protected Queue $publishQueue;
 
-    /**
-     * @var Queue
-     */
-    protected $publishQueue;
+    protected \PDO $pdo;
+
+    protected \DateTimeZone $dbTz;
 
 
     public function __construct(string $name, \PDO $pdo, \DateTimeZone $dbTz)
     {
-        $this->replyQueue = new ReplyQueue(null, $pdo, $dbTz);
-        $this->correlationId = $this->replyQueue->getCorrelationId();
+        $this->pdo = $pdo;
+        $this->dbTz = $dbTz;
         $this->publishQueue = new Queue($name, $pdo, $dbTz);
     }
 
 
     public function publish(QueueMessage $message): PromiseInterface
     {
-        $message = $message->withCorrelationId($this->correlationId);
-        $message = $message->withReplyTo($this->replyQueue->getName());
+        $message = $message->withCorrelationId($this->getReplyQueue()->getCorrelationId());
+        $message = $message->withReplyTo($this->getReplyQueue()->getName());
         return $this->publishQueue->publish($message);
     }
 
 
     public function consume(callable $callback, float $timeoutSecs, ?float $pollIntervalSecs = 0.1): void
     {
-        $this->replyQueue->consume($callback, $timeoutSecs);
+        $this->getReplyQueue()->consume($callback, $timeoutSecs);
     }
 
     public function setExpectedResponseCount(?int $count): void
     {
-        $this->replyQueue->setExpectedResponseCount($count);
+        $this->getReplyQueue()->setExpectedResponseCount($count);
     }
 
 
     public function incrementExpectedResponseCount(int $by = 1): void
     {
-        $this->replyQueue->incrementExpectedResponseCount($by);
+        $this->getReplyQueue()->incrementExpectedResponseCount($by);
+    }
+
+    public function setReplyQueue(ReplyQueueInterface $replyQueue): void
+    {
+        if (isset($this->replyQueue)) {
+            trigger_error("Reply queue already initialized! Overriding it now may cause unexpected behavior", E_USER_WARNING);
+        }
+        $this->replyQueue = $replyQueue;
+    }
+
+    public function getReplyQueue(): ReplyQueueInterface
+    {
+        if (! isset($this->replyQueue)) {
+            $this->replyQueue = new ReplyQueue(null, $this->pdo, $this->dbTz);
+        }
+        return $this->replyQueue;
     }
 
 }
