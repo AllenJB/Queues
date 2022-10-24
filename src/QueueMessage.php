@@ -6,30 +6,18 @@ namespace AllenJB\Queues;
 class QueueMessage
 {
 
-    /**
-     * @var null|int
-     */
-    protected $messageId = null;
+    protected ?int $messageId = null;
 
-    /**
-     * @var int
-     */
-    protected $attempts = 0;
+    protected int $attempts = 0;
 
     /**
      * @var mixed
      */
     protected $data;
 
-    /**
-     * @var null|string
-     */
-    protected $replyTo = null;
+    protected ?string $replyTo = null;
 
-    /**
-     * @var null|string
-     */
-    protected $correlationId = null;
+    protected ?string $correlationId = null;
 
     /**
      * @var null|mixed

@@ -12,10 +12,7 @@ use AllenJB\Queues\UnsupportedOperationException;
 class BunnyClientProxy extends AbstractClient
 {
 
-    /**
-     * @var AbstractClient
-     */
-    protected $client;
+    protected AbstractClient $client;
 
 
     /** @noinspection MagicMethodsValidityInspection PhpMissingParentConstructorInspection */

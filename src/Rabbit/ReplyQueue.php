@@ -14,36 +14,20 @@ use React\Promise\PromiseInterface;
 class ReplyQueue implements ReplyQueueInterface
 {
 
-    /**
-     * @var string
-     */
-    protected $name;
+    protected string $name;
 
-    /**
-     * @var Channel
-     */
-    protected $channel;
+    protected Channel $channel;
 
     /**
      * @var array<string,int|string>
      */
-    protected $messageHeaders = [
-    ];
+    protected array $messageHeaders = [];
 
-    /**
-     * @var null|string
-     */
-    protected $correlationId = null;
+    protected ?string $correlationId = null;
 
-    /**
-     * @var null|int
-     */
-    protected $expectedResponseCount = null;
+    protected ?int $expectedResponseCount = null;
 
-    /**
-     * @var int
-     */
-    protected $responseCount = 0;
+    protected int $responseCount = 0;
 
 
     public function __construct(?string $name, Channel $bunnyChannel)

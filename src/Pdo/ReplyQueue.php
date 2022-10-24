@@ -12,35 +12,17 @@ use React\Promise\PromiseInterface;
 class ReplyQueue implements ReplyQueueInterface
 {
 
-    /**
-     * @var string
-     */
-    protected $name;
+    protected string $name;
 
-    /**
-     * @var null|string
-     */
-    protected $correlationId = null;
+    protected ?string $correlationId = null;
 
-    /**
-     * @var \PDO
-     */
-    protected $pdo;
+    protected \PDO $pdo;
 
-    /**
-     * @var \DateTimeZone
-     */
-    protected $dbTz;
+    protected \DateTimeZone $dbTz;
 
-    /**
-     * @var null|int
-     */
-    protected $expectedResponseCount = null;
+    protected ?int $expectedResponseCount = null;
 
-    /**
-     * @var int
-     */
-    protected $responses = 0;
+    protected int $responses = 0;
 
 
     public function __construct(?string $name, \PDO $pdo, \DateTimeZone $dbTz)

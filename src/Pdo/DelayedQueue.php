@@ -3,29 +3,30 @@ declare(strict_types=1);
 
 namespace AllenJB\Queues\Pdo;
 
+use AllenJB\Queues\DelayedQueueInterface;
 use AllenJB\Queues\QueueMessage;
 use AllenJB\Queues\UnsupportedOperationException;
 use React\Promise\PromiseInterface;
 
-class DelayedQueue extends Queue
+class DelayedQueue extends Queue implements DelayedQueueInterface
 {
 
     /**
      * @var int Queue delivery delay in seconds
      */
-    protected $delayS;
+    protected int $delayS;
 
 
     /**
-     * @param string $name
+     * @param string $queueName
      * @param \PDO $pdo
      * @param \DateTimeZone $dbTz
      * @param int $delayS Queue delivery delay in seconds
      */
-    public function __construct(string $name, \PDO $pdo, \DateTimeZone $dbTz, int $delayS)
+    public function __construct(string $queueName, \PDO $pdo, \DateTimeZone $dbTz, int $delayS)
     {
         $this->delayS = $delayS;
-        parent::__construct($name, $pdo, $dbTz);
+        parent::__construct($queueName, $pdo, $dbTz);
     }
 
 

@@ -5,35 +5,27 @@ namespace AllenJB\Queues\Pdo;
 
 use AllenJB\Queues\QueueInterface;
 use AllenJB\Queues\QueueMessage;
+use AllenJB\Queues\SchedulableQueueInterface;
 use React\Promise;
 use React\Promise\PromiseInterface;
 
-class Queue implements QueueInterface
+class Queue implements QueueInterface, SchedulableQueueInterface
 {
 
-    /**
-     * @var string Queue name
-     */
-    protected $name;
+    protected string $queueName;
 
-    /**
-     * @var \PDO
-     */
-    protected $pdo;
+    protected \PDO $pdo;
 
-    /**
-     * @var \DateTimeZone
-     */
-    protected $dbTz;
+    protected \DateTimeZone $dbTz;
 
 
-    public function __construct(string $name, \PDO $pdo, \DateTimeZone $dbTz)
+    public function __construct(string $queueName, \PDO $pdo, \DateTimeZone $dbTz)
     {
         // MySQL max is 64 chars, and we reserve 2 for the "q_" prefix
-        if (strlen($name) > 62) {
+        if (strlen($queueName) > 62) {
             throw new \InvalidArgumentException("Queue name max length is 62 characters");
         }
-        $this->name = $name;
+        $this->queueName = $queueName;
         $this->pdo = $pdo;
         $this->dbTz = $dbTz;
 
@@ -43,7 +35,7 @@ class Queue implements QueueInterface
 
     protected function declareQueue(): void
     {
-        $sql = "CREATE TABLE IF NOT EXISTS `q_{$this->name}` (
+        $sql = "CREATE TABLE IF NOT EXISTS `q_{$this->queueName}` (
           `queueid` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
           `dt_created` datetime NOT NULL,
           `dt_scheduled` datetime DEFAULT NULL,
@@ -73,7 +65,7 @@ class Queue implements QueueInterface
             "message" => serialize($message->getData()),
         ];
 
-        $sql = "INSERT INTO `q_{$this->name}` (`dt_created`, `dt_scheduled`, `reply_to`, `correlation_id`, `message`)
+        $sql = "INSERT INTO `q_{$this->queueName}` (`dt_created`, `dt_scheduled`, `reply_to`, `correlation_id`, `message`)
           VALUES (NOW(), :dtScheduled, :replyTo, :correlationId, :message);";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
@@ -86,7 +78,7 @@ class Queue implements QueueInterface
         $tsLimit = microtime(true) + $timeoutSecs;
         $waitingReplies = 0;
         while (true) {
-            $sql = "UPDATE `q_{$this->name}`
+            $sql = "UPDATE `q_{$this->queueName}`
               SET `locked` = 1
               WHERE `locked` = 0
               AND (`dt_scheduled` IS NULL OR `dt_scheduled` < NOW())
@@ -105,7 +97,7 @@ class Queue implements QueueInterface
                 $waitingReplies--;
                 $queueId = $this->pdo->lastInsertId();
 
-                $sql = "SELECT * FROM `q_{$this->name}` WHERE `queueid` = :queueid";
+                $sql = "SELECT * FROM `q_{$this->queueName}` WHERE `queueid` = :queueid";
                 $params = [
                     "queueid" => $queueId,
                 ];
@@ -145,7 +137,7 @@ class Queue implements QueueInterface
     public function ack(QueueMessage $message): void
     {
         // Delete locked item
-        $sql = "DELETE FROM `q_{$this->name}` WHERE `queueid` = :queueid";
+        $sql = "DELETE FROM `q_{$this->queueName}` WHERE `queueid` = :queueid";
         $params = [
             "queueid" => $message->getId(),
         ];
@@ -157,7 +149,7 @@ class Queue implements QueueInterface
     public function nack(QueueMessage $message): void
     {
         // Release locked item
-        $sql = "UPDATE `q_{$this->name}`
+        $sql = "UPDATE `q_{$this->queueName}`
           SET `locked` = 0, `attempts` = `attempts` + 1
           WHERE `queueid` = :queueid";
         $params = [
@@ -174,7 +166,7 @@ class Queue implements QueueInterface
     public function getMessageCount(): ?int
     {
         $sql = "SELECT COUNT(queueid) AS `c`
-            FROM `q_{$this->name}`
+            FROM `q_{$this->queueName}`
             WHERE `locked` = 0
                 AND (`dt_scheduled` IS NULL OR `dt_scheduled` < NOW())";
         $stmt = $this->pdo->query($sql);
@@ -192,7 +184,7 @@ class Queue implements QueueInterface
     public function getTotalMessageCount(): ?int
     {
         $sql = "SELECT COUNT(queueid) AS `c`
-            FROM `q_{$this->name}`
+            FROM `q_{$this->queueName}`
             WHERE `locked` = 0";
         $stmt = $this->pdo->query($sql);
         if ($stmt === false) {
@@ -205,7 +197,7 @@ class Queue implements QueueInterface
 
     public function emptyQueue(): void
     {
-        $sql = "TRUNCATE TABLE `q_{$this->name}`";
+        $sql = "TRUNCATE TABLE `q_{$this->queueName}`";
         $this->pdo->exec($sql);
     }
 

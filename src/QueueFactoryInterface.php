@@ -14,4 +14,6 @@ interface QueueFactoryInterface
 
     public function createRpc(string $queueName): RPCQueueInterface;
 
+    public function createSchedulable(string $queueName): SchedulableQueueInterface;
+
 }
