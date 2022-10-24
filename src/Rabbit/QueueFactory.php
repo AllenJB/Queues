@@ -7,20 +7,16 @@ use AllenJB\Queues\QueueFactoryInterface;
 use AllenJB\Queues\QueueInterface;
 use AllenJB\Queues\ReplyQueueInterface;
 use AllenJB\Queues\RPCQueueInterface;
+use AllenJB\Queues\SchedulableQueueInterface;
+use AllenJB\Queues\UnsupportedOperationException;
 use Bunny\Channel;
 
 class QueueFactory implements QueueFactoryInterface
 {
 
-    /**
-     * @var int
-     */
-    protected $apiPort;
+    protected int $apiPort;
 
-    /**
-     * @var Channel
-     */
-    protected $bunnyChannel;
+    protected Channel $bunnyChannel;
 
 
     public function __construct(Channel $bunnyChannel, int $apiPort)
@@ -51,6 +47,12 @@ class QueueFactory implements QueueFactoryInterface
     public function createRpc(string $queueName): RPCQueueInterface
     {
         return new RPCQueue($queueName, $this->bunnyChannel, $this->apiPort);
+    }
+
+
+    public function createSchedulable(string $queueName): SchedulableQueueInterface
+    {
+        throw new UnsupportedOperationException("Schedulable queues not supported by Rabbit queues");
     }
 
 

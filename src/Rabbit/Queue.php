@@ -14,37 +14,25 @@ use React\Promise\PromiseInterface;
 class Queue implements QueueInterface
 {
 
-    /**
-     * @var int
-     */
-    protected $apiPort;
+    protected int $apiPort;
 
-    /**
-     * @var string
-     */
-    protected $name;
+    protected string $name;
 
-    /**
-     * @var Channel
-     */
-    protected $channel;
+    protected Channel $channel;
 
     /**
      * @var array<string,int|string>
      */
-    protected $messageHeaders = [
+    protected array $messageHeaders = [
         "deliver-mode" => 2,
     ];
 
-    /**
-     * @var null|string
-     */
-    protected $correlationId = null;
+    protected ?string $correlationId = null;
 
     /**
      * @var array<string>
      */
-    protected static $declaredQueues = [];
+    protected static array $declaredQueues = [];
 
 
     public function __construct(string $name, Channel $bunnyChannel, int $apiPort)

@@ -12,15 +12,9 @@ use React\Promise\PromiseInterface;
 class DelayedQueue extends Queue
 {
 
-    /**
-     * @var string
-     */
-    protected $destName;
+    protected string $destName;
 
-    /**
-     * @var float|int
-     */
-    protected $delayMS;
+    protected int $delayMS;
 
 
     public function __construct(string $name, Channel $bunnyChannel, int $apiPort, int $delayS)
