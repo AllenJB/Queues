@@ -16,6 +16,10 @@ interface QueueInterface
      */
     public function consume(callable $callback, float $timeoutSecs, ?float $pollIntervalSecs): void;
 
+    /**
+     * @param callable $callback Callback with parameters: QueueInterface $this, QueueMessage
+     */
+    public function drain(callable $callback): void;
 
     public function ack(QueueMessage $message): void;
 

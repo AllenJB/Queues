@@ -76,56 +76,14 @@ class Queue implements QueueInterface, SchedulableQueueInterface
     public function consume(callable $callback, float $timeoutSecs, ?float $pollIntervalSecs = 0.5): void
     {
         $tsLimit = microtime(true) + $timeoutSecs;
-        $waitingReplies = 0;
         while (true) {
-            $sql = "UPDATE `q_{$this->queueName}`
-              SET `locked` = 1
-              WHERE `locked` = 0
-              AND (`dt_scheduled` IS NULL OR `dt_scheduled` < NOW())
-              AND LAST_INSERT_ID(`queueid`)
-              LIMIT 1;";
-            $stmt = $this->pdo->query($sql);
-            if ($stmt === false) {
-                $errorInfo = $this->pdo->errorInfo();
-                throw new \UnexpectedValueException(
-                    "Queue item lock query failed: " . $errorInfo[0] . ": " . $errorInfo[2]
-                );
-            }
-            $affected = $stmt->rowCount();
-
-            if ($affected > 0) {
-                $waitingReplies--;
-                $queueId = $this->pdo->lastInsertId();
-
-                $sql = "SELECT * FROM `q_{$this->queueName}` WHERE `queueid` = :queueid";
-                $params = [
-                    "queueid" => $queueId,
-                ];
-                $stmt = $this->pdo->prepare($sql);
-                $stmt->execute($params);
-                $row = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-                $data = unserialize($row["message"], ["allowed_classes" => true]);
-                $message = (new QueueMessage($data))
-                    ->withId((int) $row["queueid"])
-                    ->withAttempts((int) $row["attempts"])
-                    ->withReplyTo($row["reply_to"])
-                    ->withCorrelationId($row["correlation_id"]);
-
-                $callback($this, $message);
-            } else {
-                $waitingReplies = 0;
-            }
+            $consumed = $this->consumeQueueItem($callback);
 
             if (microtime(true) > $tsLimit) {
                 break;
             }
 
-            // If more queue items are pending, loop immediately
-            if ($waitingReplies < 1) {
-                $waitingReplies = $this->getMessageCount();
-            }
-            if ($waitingReplies > 0) {
+            if ($consumed) {
                 continue;
             }
 
@@ -133,6 +91,57 @@ class Queue implements QueueInterface, SchedulableQueueInterface
         }
     }
 
+    protected function consumeQueueItem(callable $callback): bool
+    {
+        $sql = "UPDATE `q_{$this->queueName}`
+              SET `locked` = 1
+              WHERE `locked` = 0
+              AND (`dt_scheduled` IS NULL OR `dt_scheduled` < NOW())
+              AND LAST_INSERT_ID(`queueid`)
+              LIMIT 1;";
+        $stmt = $this->pdo->query($sql);
+        if ($stmt === false) {
+            $errorInfo = $this->pdo->errorInfo();
+            throw new \UnexpectedValueException(
+                "Queue item lock query failed: " . $errorInfo[0] . ": " . $errorInfo[2]
+            );
+        }
+        $affected = $stmt->rowCount();
+
+        if ($affected === 0) {
+            return false;
+        }
+
+        $queueId = $this->pdo->lastInsertId();
+
+        $sql = "SELECT * FROM `q_{$this->queueName}` WHERE `queueid` = :queueid";
+        $params = [
+            "queueid" => $queueId,
+        ];
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $data = unserialize($row["message"], ["allowed_classes" => true]);
+        $message = (new QueueMessage($data))
+            ->withId((int) $row["queueid"])
+            ->withAttempts((int) $row["attempts"])
+            ->withReplyTo($row["reply_to"])
+            ->withCorrelationId($row["correlation_id"]);
+
+        $callback($this, $message);
+        return true;
+    }
+
+    public function drain(callable $callback): void
+    {
+        while (true) {
+            $consumed = $this->consumeQueueItem($callback);
+            if (! $consumed) {
+                break;
+            }
+        }
+    }
 
     public function ack(QueueMessage $message): void
     {
