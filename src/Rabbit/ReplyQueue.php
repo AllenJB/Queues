@@ -34,7 +34,7 @@ class ReplyQueue implements ReplyQueueInterface
     {
         $this->channel = $bunnyChannel;
         $this->name = ($name ?? "");
-        if (($this->name ?? "") === "") {
+        if ($this->name === "") {
             $correlationId = Uuid::uuid4()->getHex();
             /**
              * @var \Ramsey\Uuid\Type\Hexadecimal|string $correlationId ramsey/uuid 3.8 returns string

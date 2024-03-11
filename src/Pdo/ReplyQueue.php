@@ -42,7 +42,7 @@ class ReplyQueue implements ReplyQueueInterface
             }
             $this->setCorrelationId($correlationId);
             $this->declareQueue();
-        } elseif (strlen($name ?? "") > 62) {
+        } elseif (strlen($name) > 62) {
             // MySQL max is 64 chars, and we reserve 2 for the "q_" prefix
             throw new \InvalidArgumentException("Queue name max length is 62 characters");
         } else {

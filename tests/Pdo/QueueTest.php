@@ -10,14 +10,9 @@ use AllenJB\Queues\UnsupportedOperationException;
 
 class QueueTest extends TestCase
 {
+    protected \PDO $pdo;
 
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\PDO
-     */
-    protected $pdo;
-
-    protected $dbTz;
-
+    protected \DateTimeZone $dbTz;
 
     public function setUp(): void
     {
@@ -27,7 +22,6 @@ class QueueTest extends TestCase
             'NO_ZERO_IN_DATE',
             'STRICT_ALL_TABLES',
             'ONLY_FULL_GROUP_BY',
-            'NO_AUTO_CREATE_USER',
             'NO_ENGINE_SUBSTITUTION',
         ];
         $initCmd = "SET sql_mode = '" . implode(',', $sqlModes) . "', time_zone='+00:00'";
@@ -46,7 +40,6 @@ class QueueTest extends TestCase
         );
         $this->dbTz = new \DateTimeZone("UTC");
     }
-
 
     public function testImmediate(): void
     {
@@ -142,7 +135,6 @@ class QueueTest extends TestCase
         $this->assertEquals(0, $sizeChange);
     }
 
-
     public function testScheduled(): void
     {
         $queue = new Queue("unit_test_sched", $this->pdo, $this->dbTz);
@@ -214,7 +206,6 @@ class QueueTest extends TestCase
         $queue->ack($queueItem);
     }
 
-
     public function testEmptyQueue(): void
     {
         $queue = new Queue("unit_test_empty", $this->pdo, $this->dbTz);
@@ -235,7 +226,6 @@ class QueueTest extends TestCase
 
         $this->assertNull($queueItem);
     }
-
 
     public function testMaxNameLength(): void
     {
@@ -270,7 +260,6 @@ class QueueTest extends TestCase
         $this->assertEquals(1, $sizeChange);
     }
 
-
     public function testDelayedQueue(): void
     {
         $queue = new DelayedQueue("unit_test_delay", $this->pdo, $this->dbTz, 2);
@@ -299,13 +288,13 @@ class QueueTest extends TestCase
         $this->assertNull($queueItem);
 
         // Wait for message due time to elapse
-        sleep(3);
+        sleep(4);
 
         $sizeChangeTotal = $queue->getTotalMessageCount() - $origSizeTotal;
         $sizeChange = $queue->getMessageCount() - $origSize;
 
         $this->assertEquals(1, $sizeChangeTotal);
-        $this->assertEquals(1, $sizeChange);
+        $this->assertEquals(1, $sizeChange, "orig: {$origSize}");
 
         $origSizeTotal = $queue->getTotalMessageCount();
         $origSize = $queue->getMessageCount();
@@ -337,7 +326,6 @@ class QueueTest extends TestCase
         $queue->ack($queueItem);
     }
 
-
     public function testDelayedQueueScheduled(): void
     {
         $queue = new DelayedQueue("unit_test_sched_delay", $this->pdo, $this->dbTz, 2);
@@ -345,7 +333,6 @@ class QueueTest extends TestCase
 
         $origSizeTotal = $queue->getTotalMessageCount();
         $origSize = $queue->getMessageCount();
-
 
         $dtDelayTo = new \DateTimeImmutable("+2 seconds");
         $dtNow = new \DateTimeImmutable();
@@ -366,7 +353,6 @@ class QueueTest extends TestCase
         $this->assertEquals(0, $sizeChangeTotal);
         $this->assertEquals(0, $sizeChange);
     }
-
 
     public function testRpcFeatures(): void
     {
@@ -463,6 +449,5 @@ class QueueTest extends TestCase
         $this->assertEquals(0, $sizeChangeTotal);
         $this->assertEquals(0, $sizeChange);
     }
-
 
 }
