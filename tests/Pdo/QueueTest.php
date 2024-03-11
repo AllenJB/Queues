@@ -27,7 +27,6 @@ class QueueTest extends TestCase
             'NO_ZERO_IN_DATE',
             'STRICT_ALL_TABLES',
             'ONLY_FULL_GROUP_BY',
-            'NO_AUTO_CREATE_USER',
             'NO_ENGINE_SUBSTITUTION',
         ];
         $initCmd = "SET sql_mode = '" . implode(',', $sqlModes) . "', time_zone='+00:00'";
@@ -299,13 +298,13 @@ class QueueTest extends TestCase
         $this->assertNull($queueItem);
 
         // Wait for message due time to elapse
-        sleep(3);
+        sleep(4);
 
         $sizeChangeTotal = $queue->getTotalMessageCount() - $origSizeTotal;
         $sizeChange = $queue->getMessageCount() - $origSize;
 
         $this->assertEquals(1, $sizeChangeTotal);
-        $this->assertEquals(1, $sizeChange);
+        $this->assertEquals(1, $sizeChange, "orig: {$origSize}");
 
         $origSizeTotal = $queue->getTotalMessageCount();
         $origSize = $queue->getMessageCount();
