@@ -21,6 +21,7 @@ parameters:
 
     ignoreErrors:
         - '#^Call to an undefined method React\\Promise\\PromiseInterface::done\(\)#'
+        - '#^Dynamic call to static method PHPUnit#'
 
 services:
     -
