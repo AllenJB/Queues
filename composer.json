@@ -28,7 +28,7 @@
         "phpcompatibility/php-compatibility": "^9.3",
         "phpstan/phpstan": "^1.10",
         "phpstan/phpstan-strict-rules": "^1.5",
-        "phpunit/phpunit": "^8.4|^9.0|^9.5",
+        "phpunit/phpunit": "^9.5|^10.5|^11.0",
         "slam/phpstan-extensions": "^6.0"
     }
 }
