@@ -91,6 +91,10 @@ class Queue implements QueueInterface
         throw new UnsupportedOperationException("Consumption is not supported by RabbitQueue");
     }
 
+    public function drain(callable $callback): void
+    {
+        throw new UnsupportedOperationException("Consumption is not supported by RabbitQueue");
+    }
 
     public function ack(QueueMessage $message): void
     {
