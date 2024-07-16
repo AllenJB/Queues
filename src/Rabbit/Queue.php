@@ -24,7 +24,7 @@ class Queue implements QueueInterface
      * @var array<string,int|string>
      */
     protected array $messageHeaders = [
-        "deliver-mode" => 2,
+        "delivery-mode" => 2,
     ];
 
     protected ?string $correlationId = null;
