@@ -1,2 +1,7 @@
+/.idea
+/build/
 /vendor/
+*.bak
+.phpunit.result.cache
+composer.lock
 phpunit.xml

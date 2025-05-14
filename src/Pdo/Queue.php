@@ -51,7 +51,7 @@ class Queue implements QueueInterface, SchedulableQueueInterface
     }
 
 
-    public function publish(QueueMessage $message, \DateTimeImmutable $delayTo = null): PromiseInterface
+    public function publish(QueueMessage $message, ?\DateTimeImmutable $delayTo = null): PromiseInterface
     {
         $delayToVal = null;
         if ($delayTo !== null) {

@@ -30,7 +30,7 @@ class DelayedQueue extends Queue implements DelayedQueueInterface
     }
 
 
-    public function publish(QueueMessage $message, \DateTimeImmutable $delayTo = null): PromiseInterface
+    public function publish(QueueMessage $message, ?\DateTimeImmutable $delayTo = null): PromiseInterface
     {
         if ($delayTo !== null) {
             throw new UnsupportedOperationException("Message specific delays are not supported on Delayed Queues");
