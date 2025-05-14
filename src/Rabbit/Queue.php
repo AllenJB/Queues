@@ -59,7 +59,7 @@ class Queue implements QueueInterface
     }
 
 
-    public function publish(QueueMessage $message, \DateTimeImmutable $delayTo = null): PromiseInterface
+    public function publish(QueueMessage $message, ?\DateTimeImmutable $delayTo = null): PromiseInterface
     {
         if ($delayTo !== null) {
             throw new UnsupportedOperationException("Message delays are not supported on Rabbit Queues");

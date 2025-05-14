@@ -8,7 +8,7 @@ use React\Promise\PromiseInterface;
 interface QueueInterface
 {
 
-    public function publish(QueueMessage $message, \DateTimeImmutable $delayTo = null): PromiseInterface;
+    public function publish(QueueMessage $message, ?\DateTimeImmutable $delayTo = null): PromiseInterface;
 
 
     /**
